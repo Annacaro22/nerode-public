@@ -22,7 +22,6 @@ depends: [
   "alcotest"
   "dune" {>= "1.2"}
   "core" {>= "v0.16"}
-  "core_unix" {>= "v0.16"}
   "ounit2"
   "ppx_deriving_yojson"
   "ppx_jane" {>= "v0.16"}
