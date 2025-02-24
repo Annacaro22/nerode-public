@@ -96,7 +96,7 @@ let bv_of_t (t: Table.t) =
          end) in
 
   let constrain_row mk_row i acc (u,r) =
-    let get_e t = t |> Table.col_labels |> ColLabels.elements 
+    let get_e t = t |> Table.col_labels |> ColLabels.elements
       |> List.map ~f:Word.to_symlist in
     let row = mk_row i in
     declare_const solver (Id row) (BitVecSort (List.length (get_e t)));
@@ -107,11 +107,11 @@ let bv_of_t (t: Table.t) =
         let extract = extract j j (const row) in
         assert_ solver (equals term extract));
         Map.set acc ~key:u ~data:(const row) in
-  
+
   let map_conv = List.map ~f:(fun (w,elst) -> (Word.to_symlist w, elst)) in
-  let s_rows = List.foldi (map_conv (Table.up_rows_labels_entries t)) 
+  let s_rows = List.foldi (map_conv (Table.up_rows_labels_entries t))
     ~init:WordMap.empty ~f:(constrain_row s_var) in
-  let sa_rows = List.foldi (map_conv (Table.low_rows_labels_entries t)) 
+  let sa_rows = List.foldi (map_conv (Table.low_rows_labels_entries t))
     ~init:WordMap.empty ~f:(constrain_row sa_var) in
   (s_rows, sa_rows, term_of_entry)
 
@@ -139,7 +139,7 @@ let assert_consistent alpha s_rows sa_rows =
   List.iteri s ~f:(fun i si ->
     List.iteri (List.filteri s ~f:(fun j _ -> j < i)) ~f:(fun j sj ->
       List.iter alpha ~f:(fun x ->
-        assert_ solver (implies (equals (lookup si) (lookup sj)) 
+        assert_ solver (implies (equals (lookup si) (lookup sj))
                                 (equals (lookup (si@[x])) (lookup (sj@[x]))));
         )))
 
@@ -167,11 +167,11 @@ let min_rows s_rows sa_rows =
 let fill_blanks_asns (t: Table.t) assrt_lst =
   let (s_rows,sa_rows,toe) = bv_of_t t in
   let () = List.iter ~f:(fun a -> a s_rows sa_rows) assrt_lst in
-  let start = Core_unix.gettimeofday () in
+  let start = Caml_unix.gettimeofday () in
   let answer = check_sat solver in
-  let () = real_z3_time := !real_z3_time +. (Core_unix.gettimeofday () -. start) in
+  let () = real_z3_time := !real_z3_time +. (Caml_unix.gettimeofday () -. start) in
 
-  let get_results () = 
+  let get_results () =
         let results = Stdlib.Hashtbl.create 11 in
         List.iter (get_model solver) ~f:(fun (id, term) ->
         let var = Const (id) in
@@ -181,15 +181,15 @@ let fill_blanks_asns (t: Table.t) assrt_lst =
         | "(_ bv0 1)" -> Stdlib.Hashtbl.add results var false
         | _ -> ());
         results in
-  let add_lookup res w acc = 
+  let add_lookup res w acc =
     let open Table in
     let term = toe w Blank in
     let entry = if Stdlib.Hashtbl.find res term then True else False in
     CamlWordMap.add (Word.of_symlist w) entry acc in
 
   let blanks = Table.get_blanks t in
-  let results_map res = 
-    WordSet.fold (fun w -> add_lookup res (Word.to_symlist w)) 
+  let results_map res =
+    WordSet.fold (fun w -> add_lookup res (Word.to_symlist w))
     blanks CamlWordMap.empty in
 
   match answer with

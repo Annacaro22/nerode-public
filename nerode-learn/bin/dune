@@ -1,4 +1,4 @@
 (executables
  (public_names nerodelearn)
  (names main)
- (libraries core core_unix.command_unix nerode nerodelearn))
+ (libraries core nerode nerodelearn))

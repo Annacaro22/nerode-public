@@ -46,10 +46,10 @@ let learn_from_examples v tex uniq sc dist db ge pq (csv:bool) fn () =
   let () = set_verbose v false csv in (*no latex for now *)
   (*[set_ge] sets suffix-sharing between tables optimization on if [ge] true*)
   let () = CliOpt.set_ge ge in
-  (*[set_uniq] enables word ordering of table row labels to prevent searching 
+  (*[set_uniq] enables word ordering of table row labels to prevent searching
   duplicates if [uniq]. However, cannot use priority queue optimization with this*)
   let () = CliOpt.set_uniq uniq in
-  (*[set_unsat_cores] enables optimization of only moving up lower rows in 
+  (*[set_unsat_cores] enables optimization of only moving up lower rows in
   unsat core of SAT solver attempt to fill in the table if [sc]*)
   let () = CliOpt.set_unsat_cores sc in
   (*[set_d_conc] permits learner to use strict distinguish query to teacher
@@ -58,7 +58,7 @@ let learn_from_examples v tex uniq sc dist db ge pq (csv:bool) fn () =
   (*[set_distinguish] sets learner to use distinguish query of weakened iMAT
   as substitute for validity query to conjecture dfa if [db]*)
   let () = CliOpt.set_distinguish db in
-  (*[set_pq] enables optimization of implementation of Worklist as a 
+  (*[set_pq] enables optimization of implementation of Worklist as a
   priority queue, with tables ordered using heuristics, if [pq]*)
   let () = CliOpt.set_pq pq in
   if sc then
@@ -76,7 +76,7 @@ let learn_from_examples v tex uniq sc dist db ge pq (csv:bool) fn () =
   | _ -> ()
 
 (*run algorithm on whole directory*)
-let learn_from_dir_examples v tex uniq sc dist db ge pq (csv:bool) dn () = 
+let learn_from_dir_examples v tex uniq sc dist db ge pq (csv:bool) dn () =
   let () = set_verbose v tex csv in
   let () = if CliOpt.csv () then
               Printf.printf "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"\n"
@@ -90,10 +90,10 @@ let learn_from_dir_examples v tex uniq sc dist db ge pq (csv:bool) dn () =
                   "learn-time"
            else
               () in
-  let file_arr = Sys_unix.readdir dn in 
+  let file_arr = Stdlib.Sys.readdir dn in
   let n = Array.length file_arr in
-  Array.iteri file_arr 
-    ~f:(fun i fn -> 
+  Array.iteri file_arr
+    ~f:(fun i fn ->
           let () = Printf.eprintf "%s. [%d / %d files]\n%!" fn i n  in
           let () = if CliOpt.csv () then
             Printf.printf "\"%s\"," fn
@@ -102,65 +102,89 @@ let learn_from_dir_examples v tex uniq sc dist db ge pq (csv:bool) dn () =
 
           learn_from_examples v tex uniq sc dist db ge pq csv (dn^"/"^fn) ())
 
-let kvrx_cmd =
-  let open Command.Spec in
-  Command.basic_spec
-    ~summary: "Run KV using a teacher built from a Rx"
-    (empty
-    +> anon ("rx" %: string))
-    kv_from_rx
+let kvrx_cmd () =
+  let open Stdlib.Arg in
+  let rx = ref "" in
+  let usage = "Run KV using a teacher built from a Rx\n  kv <rx>" in
+  parse [] (fun r -> rx := r) usage;
+  kv_from_rx !rx ()
 
-let lsb_sep_cmd =
-  let open Command.Spec in
-  Command.basic_spec
-    ~summary: "Run the L* with Blanks on two regular languages"
-    (empty
-    +> anon ("L+" %: string)
-    +> anon ("L-" %: string))
-    learn_from_sep_rx
+let lsb_sep_cmd () =
+  let pos = ref "" in
+  let neg = ref "" in
+  let read_sets set =
+    if String.is_empty !pos then
+      pos := set
+    else if String.is_empty !neg then
+      neg := set in
+  let usage = "Run the L* with Blanks on two regular languages\n  lsblanks-sep [L+] [L-]" in
+  Stdlib.Arg.parse [] read_sets usage;
+  learn_from_sep_rx !pos !neg ()
 
-let lsb_cmd =
-  let open Command.Spec in
-  Command.basic_spec
-    ~summary: "Run L* with Blanks on a finite example set"
-    (empty
-     +> flag "-v" no_arg ~doc: ("Verbose")
-     +> flag "-l" no_arg ~doc: ("Latex")
-     +> flag "-u" no_arg ~doc: ("Use Word-ordering to prevent investigating duplicate tables")
-     +> flag "-s" no_arg ~doc: ("Use unsat cores, but *not* word-ordering (use the visited set instead)")
-     +> flag "-dc" no_arg ~doc: ("Use the teacher's concrete version of `distinguish' query to improve learner")
-     +> flag "-d" no_arg ~doc: ("Use teacher's `distinguish' queries as substitute for conjecture")
-     +> flag "-ge" no_arg ~doc: ("Make Columns global/Global E maintained as argument in main loop")
-     +> flag "-pq" no_arg ~doc: ("Use Heurisitc prioritization in Worklist")
-     +> flag "-f" no_arg ~doc: ("Write data in csv format.")
-     +> anon ("file" %: string))
-    learn_from_examples
+let lsb_cmd () =
+  let open Stdlib.Arg in
+  let verbose = ref false in
+  let latex = ref false in
+  let ordering = ref false in
+  let unsat = ref false in
+  let concrete = ref false in
+  let distinguish = ref false in
+  let global = ref false in
+  let prior = ref false in
+  let csv = ref false in
+  let file = ref "" in
 
-let lsb_dir_cmd = 
-  let open Command.Spec in
-  Command.basic_spec
-    ~summary: "Run L* with Blanks on a whole directory of benchmarks"
-    (empty
-     +> flag "-v" no_arg ~doc: ("Verbose")
-     +> flag "-l" no_arg ~doc: ("Latex")
-     +> flag "-u" no_arg ~doc: ("Use Word-ordering to prevent investigating duplicate tables")
-     +> flag "-s" no_arg ~doc: ("Use Z3 unsat cores, and *not* word-ordering (use the visited set instead)")
-     +> flag "-dc" no_arg ~doc: ("Use the teacher's concrete version of `distinguish' query to improve learner")
-     +> flag "-d" no_arg ~doc: ("Use teacher's `distinguish' queries as substitute for conjecture")
-     +> flag "-ge" no_arg ~doc: ("Make Columns not global/Tables can have different columns")
-     +> flag "-pq" no_arg ~doc: ("Use Heurisitc prioritization in Worklist")
-     +> flag "-f" no_arg ~doc: ("Write data in csv format.")
-     +> anon ("file" %: string))
-    learn_from_dir_examples
+  let speclist = [
+    ("-v", Set verbose, "Verbose");
+    ("-l", Set latex, "Latex");
+    ("-u", Set ordering, "Use Word-ordering to prevent investigating duplicate tables");
+    ("-s", Set unsat, "Use unsat cores, but *not* word-ordering (use the visited set instead)");
+    ("-dc", Set concrete, "Use the teacher's concrete version of `distinguish' query to improve learner");
+    ("-d", Set distinguish, "Use teacher's `distinguish' queries as substitute for conjecture");
+    ("-ge", Set global, "Make Columns global/Global E maintained as argument in main loop");
+    ("-pq", Set prior, "Use Heurisitc prioritization in Worklist");
+    ("-f", Set csv, "Write data in csv format");
+  ] in
+  let usage = "Run L* with Blanks on a finite example set" in
+  parse speclist (fun f -> file := f) usage;
+  learn_from_examples !verbose !latex !ordering !unsat !concrete !distinguish !global !prior !csv !file ()
 
-let main : Command.t =
-  Command.group
-    ~summary:"Execute an automaton learning algorithm"
-    [
-     ("lsblanks", lsb_cmd);
-     ("lsblanks-dir", lsb_dir_cmd);
-     ("lsblanks-sep", lsb_sep_cmd);
-     ("kv", kvrx_cmd);
-    ]
+let lsb_dir_cmd () =
+  let open Stdlib.Arg in
+  let verbose = ref false in
+  let latex = ref false in
+  let ordering = ref false in
+  let unsat = ref false in
+  let concrete = ref false in
+  let distinguish = ref false in
+  let global = ref false in
+  let prior = ref false in
+  let csv = ref false in
+  let dir = ref "" in
 
-let () = Command_unix.run ~version: "0.1.1" main
+  let speclist = [
+    ("-v", Set verbose, "Verbose");
+    ("-l", Set latex, "Latex");
+    ("-u", Set ordering, "Use Word-ordering to prevent investigating duplicate tables");
+    ("-s", Set unsat, "Use unsat cores, but *not* word-ordering (use the visited set instead)");
+    ("-dc", Set concrete, "Use the teacher's concrete version of `distinguish' query to improve learner");
+    ("-d", Set distinguish, "Use teacher's `distinguish' queries as substitute for conjecture");
+    ("-ge", Set global, "Make Columns global/Global E maintained as argument in main loop");
+    ("-pq", Set prior, "Use Heurisitc prioritization in Worklist");
+    ("-f", Set csv, "Write data in csv format");
+  ] in
+  let usage = "Run L* with Blanks on a whole directory of benchmarks\n  lsblanks-dir [OPTIONS] <dir>" in
+  parse speclist (fun f -> dir := f) usage;
+  learn_from_dir_examples !verbose !latex !ordering !unsat !concrete !distinguish !global !prior !csv !dir ()
+
+let () =
+  let bad_cmd_str = "Invalid subcommand, valid are: lsblanks, lsblanks-dir, lsblanks-sep, kv." in
+  if (Stdlib.Array.length Stdlib.Sys.argv) < 2
+    then failwith bad_cmd_str;
+  Arg.current := !(Arg.current) + 1;
+  match Stdlib.Array.get (Stdlib.Sys.argv) 1 with
+    | "lsblanks" -> lsb_cmd ()
+    | "lsblanks-dir" -> lsb_dir_cmd ()
+    | "lsblanks-sep" -> lsb_sep_cmd ()
+    | "kv" -> kvrx_cmd ()
+    | _ -> failwith bad_cmd_str
