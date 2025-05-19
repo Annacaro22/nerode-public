@@ -1,5 +1,5 @@
 (tests
- (names test)
+ (names test compare)
  (libraries nerodelearn nerode ounit2)
  (deps tomita_t1 tomita_t3)
  (action
