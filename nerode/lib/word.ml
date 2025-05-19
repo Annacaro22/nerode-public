@@ -7,6 +7,7 @@ let suffixes w =
   List.fold_right (fun l acc -> (l::List.hd acc)::acc) w [epsilon]
 let prefixes w = suffixes (List.rev w) |> List.map List.rev |> List.rev
 let append_letter w (l : Alphabet.symbol) : t = w @ [l]
+let prepend_letter w (l : Alphabet.symbol) : t = [l] @ w
 let concat w1 w2 = w1 @ w2  
 let of_intlist lst = List.map Alphabet.sym_of_int lst
 let to_intlist (w: t) = List.map Alphabet.sym_to_int w

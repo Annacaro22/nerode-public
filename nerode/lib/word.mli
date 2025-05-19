@@ -23,6 +23,10 @@ val suffixes : t -> t list
 E.g., append_letter HELL O = HELLO*)
 val append_letter : t -> Alphabet.symbol -> t
 
+(** [prepend_letter l w] returns the word [w] with the letter [l] attached to the front
+E.g., prepend_letter H ELLO = HELLO*)
+val prepend_letter : t -> Alphabet.symbol -> t
+
 (** [concat w1 w2] return the concatenation of [w1] and [w2], i.e. [w1 . w2].
 For example, [concat "one" "two"] is "onetwo" *)
 val concat : t -> t -> t
