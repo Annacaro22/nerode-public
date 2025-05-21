@@ -1,5 +1,5 @@
-(** Angluin's minimally adequate teacher, using a PAC equivalence of up to size 10 strings to judge
-DFA equivalence *)
+(** Angluin's minimally adequate teacher, using equivalence strategies e.g. equivalence on all strings up to
+length n, random m strings up to length n, etc, to evaluate DFA equivalence *)
 
 open Nerode
 open Alphabet
@@ -42,37 +42,58 @@ let int2string int =
   | h :: t -> t
   | x -> x
 
-let randomints max_queries = 
-  let maximum = min max_queries 2046 in
-  let querylist = List.init maximum (fun x -> 0) in
-  let numbers = List.map (fun _ -> Random.int_in_range ~min:2 ~max:2046) querylist in
+
+let intToSize n : int =
+  let output = Float.to_int ((2. ** (Float.of_int(n) +. 1.0)) -. 2.0) in output
+
+(*m random strings up to length n*)
+let randomints m n = 
+  let max_quers = intToSize m in
+  let querylist = List.init max_quers (fun x -> 0) in
+  let numbers = List.map (fun _ -> Random.int_in_range ~min:2 ~max:(intToSize n)) querylist in
   numbers
 
-let firstints max_queries = 
-  let maximum = min max_queries 2046 in
-  let querylist = List.init maximum (fun x -> x + 2) in
+(*all strings up to legnth n*)
+let firstints n = 
+  let max_quers = intToSize n in
+  let querylist = List.init max_quers (fun x -> x + 2) in
   querylist
 
 let conversion (l: int list list) : Alphabet.symbol list list = List.map (List.map Alphabet.sym_of_int) l
 
-let generateTests (t : t) (c: Dfa.t) (epsilon : float) (delta : float) : (word list * float) =
-  let i = t.query_count in
-  let max_queries = Float.ceil((1.0 /. epsilon)*.(Float.log((1.0 /. delta)+.(Float.of_int(!i) *. Float.log(2.0))))) in
-  let max_queries = Float.mul max_queries 1.0 in
-  let binaryStrings = List.map int2string (randomints (Float.to_int max_queries)) in
+let generateTests_random (m : int) (n : int) : (word list * int) =
+  let binaryStrings = List.map int2string (randomints m n) in
+  let quers = intToSize m in
   let withepsilon = [Word.epsilon] @ binaryStrings in
-  (withepsilon, max_queries)
+  (withepsilon, quers)
 
-let conjecture (t: t) (c: Dfa.t) : word option =
-  let epsilon = 0.1 in
-  let delta = 0.1 in
-  let withepsilon = fst (generateTests (t) (c) (epsilon) (delta)) in
+let generateTests_all (n : int) : (word list * int) =
+  let binaryStrings = List.map int2string (firstints n) in
+  let quers = intToSize n in
+  let withepsilon = [Word.epsilon] @ binaryStrings in
+  (withepsilon, quers)
+
+let conjecture_random (t: t) (c: Dfa.t) : word option =
+  let m = 5 in
+  let n = 10 in
+  let withepsilon = fst (generateTests_random m n) in
   let differenty = different t c in
   (*filters out all non-different words, leaves only different ones (counterexamples)*)
   let counterexes = List.filter differenty withepsilon in
   match counterexes with
     | [] -> None
     | x :: l -> Some x 
+
+let conjecture_all (t: t) (c: Dfa.t) : word option =
+  let n = 10 in
+  let withepsilon = fst (generateTests_all n) in
+  let differenty = different t c in
+  (*filters out all non-different words, leaves only different ones (counterexamples)*)
+  let counterexes = List.filter differenty withepsilon in
+  match counterexes with
+    | [] -> None
+    | x :: l -> Some x 
+
 
 let query (t: t) (w: word) =
   let () = t.query_count := !(t.query_count) + 1 in
