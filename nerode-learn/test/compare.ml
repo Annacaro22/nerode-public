@@ -72,15 +72,13 @@ let rec generate_regex (curr : Rx.t) (choices : (int*int) list)=
             |1 -> rx_0
             |2 -> rx_1
             |_ -> rx_empty in
-            (*let _ = print_endline("now " ^ Rx.to_string alpha01 (safe_seq curr digitrex)) in*)
             generate_regex (safe_seq curr digitrex) t
       |2 -> let digitrex = match digit with
             |1 -> rx_0
             |2 -> rx_1
             |_ -> rx_empty in
-            (*let _ = print_endline("now " ^ Rx.to_string alpha01 (safe_union curr digitrex)) in*)
             generate_regex(safe_union curr digitrex) t
-      |3 -> (*let _ = print_endline("now " ^ Rx.to_string alpha01 (Rx.star curr)) in*) 
+      |3 ->
         generate_regex(Rx.star curr) t
       |_ -> curr)
 
@@ -105,10 +103,8 @@ let pullChoices (size : int) (currelt)=
 let generators()=
   let sizey = QCheck.filter QCheck.int ~f:(in_range 1 10) in
   let sizeint = generator_to_int sizey 10 in
-  (*let _ = print_string("size is "); print_endline(Int.to_string sizeint) in*)
   let blank = make_blank sizeint in
   let choices = List.map (pullChoices (sizeint)) blank in
-  (*let _ = print_endline("choices are " ^ "[" ^ String.concat ";" (List.map (print_pair) choices) ^ "]") in*)
   generate_regex rx_empty choices
 
 
@@ -117,8 +113,6 @@ let rec randomRx(curr : Rx.t) =
   let choose = Random.int_in_range ~min:1 ~max:8 in
   let op = choose mod 4 in
   let digit = choose mod 3 in
-  (*let _ = print_endline ("curr regex: " ^ Rx.to_string alpha01 curr) in
-  let _ = print_endline ("op, digit: " ^ string_of_int op ^ " " ^ string_of_int digit) in*)
   match op with
   |1 -> let digitrex = (match digit with
         |1 -> rx_0
@@ -186,21 +180,15 @@ let errorMeasure_full (eresult: Dfa.t) (lresult: Dfa.t) : float =
 
 let get_one_regex () =
   let type_regex = Test_gen.get_regex () in
-  (*let _ = print_endline("sexp version:"); Test_gen.print_one type_regex in*)
   let reg = Types.regex_convert (type_regex) in
-  let _ = print_string("regex: "); print_endline (Rx.to_string alpha_chars reg) in
   reg
 
 let oneTestRound_PAC index =
   let regex = get_one_regex () in
-  (*let regex = generators() in*)
-  (*let regex = randomRx(Rx.Empty) in*)
-  (*let _ = print_endline ("current regex " ^ (Rx.to_string alpha01 regex)) in*)
   let lstar_output, lstar_time, _ = oneTest_L regex in
   let est_output, est_time, est_teacher = oneTest_E regex in
   let error = errorMeasure_full est_output lstar_output in
   let numerrors = (if not (Dfa.equiv lstar_output est_output) then
-    (*let _ = print_endline ("error on regex " ^ (Rx.to_string alpha01 regex)) in*)
     1 else 0) in
   (error, lstar_time, est_time, numerrors)
 
@@ -216,14 +204,10 @@ let oneTest_OE rx=
 
 let oneTestRound_allstrings index =
   let regex = get_one_regex () in
-  (*let regex = generators() in*)
-  (*let regex = randomRx(Rx.Empty) in*)
-  (*let _ = print_endline ("current regex " ^ (Rx.to_string alpha01 regex)) in*)
   let lstar_output, lstar_time, _ = oneTest_L regex in
   let est_output, est_time, est_teacher = oneTest_OE regex in
   let error = errorMeasure_full est_output lstar_output in
   let numerrors = (if not (Dfa.equiv lstar_output est_output) then
-    (*let _ = print_endline ("error on regex " ^ (Rx.to_string alpha01 regex)) in*)
     1 else 0) in
   (error, lstar_time, est_time, numerrors)
 
@@ -240,14 +224,10 @@ let oneTest_OE rx=
 
 let oneTestRound_randomstrings index =
   let regex = get_one_regex () in
-  (*let regex = generators() in*)
-  (*let regex = randomRx(Rx.Empty) in*)
-  (*let _ = print_endline ("current regex " ^ (Rx.to_string alpha01 regex)) in*)
   let lstar_output, lstar_time, _ = oneTest_L regex in
   let est_output, est_time, est_teacher = oneTest_OE regex in
   let error = errorMeasure_full est_output lstar_output in
   let numerrors = (if not (Dfa.equiv lstar_output est_output) then
-    (*let _ = print_endline ("error on regex " ^ (Rx.to_string alpha01 regex)) in*)
     1 else 0) in
   (error, lstar_time, est_time, numerrors)
 
