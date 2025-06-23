@@ -1,6 +1,9 @@
 (tests
- (names test compare)
- (libraries nerodelearn nerode ounit2)
- (deps tomita_t1 tomita_t3)
+ (names test compare gen test_gen types)
+ (libraries nerodelearn nerode ounit2 core)
+ (deps tomita_t1 tomita_t3 gen)
+ (preprocess
+  (pps ppx_let ppx_expect ppx_inline_test ppx_sexp_conv))
  (action
   (run %{test})))
+

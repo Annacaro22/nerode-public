@@ -1,5 +1,5 @@
-(** Angluin's minimally adequate teacher, using equivalence strategies e.g. equivalence on all strings up to
-length n, random m strings up to length n, etc, to evaluate DFA equivalence *)
+(** Angluin's minimally adequate teacher, using the equivalence strategies of equivalence on random m strings up to length n, 
+to evaluate DFA equivalence *)
 
 open Nerode
 open Alphabet
@@ -59,6 +59,7 @@ let firstints n =
   let querylist = List.init max_quers (fun x -> x + 2) in
   querylist
 
+
 let conversion (l: int list list) : Alphabet.symbol list list = List.map (List.map Alphabet.sym_of_int) l
 
 let generateTests_random (m : int) (n : int) : (word list * int) =
@@ -67,13 +68,7 @@ let generateTests_random (m : int) (n : int) : (word list * int) =
   let withepsilon = [Word.epsilon] @ binaryStrings in
   (withepsilon, quers)
 
-let generateTests_all (n : int) : (word list * int) =
-  let binaryStrings = List.map int2string (firstints n) in
-  let quers = intToSize n in
-  let withepsilon = [Word.epsilon] @ binaryStrings in
-  (withepsilon, quers)
-
-let conjecture_random (t: t) (c: Dfa.t) : word option =
+let conjecture (t: t) (c: Dfa.t) : word option =
   let m = 5 in
   let n = 10 in
   let withepsilon = fst (generateTests_random m n) in
@@ -84,15 +79,6 @@ let conjecture_random (t: t) (c: Dfa.t) : word option =
     | [] -> None
     | x :: l -> Some x 
 
-let conjecture_all (t: t) (c: Dfa.t) : word option =
-  let n = 10 in
-  let withepsilon = fst (generateTests_all n) in
-  let differenty = different t c in
-  (*filters out all non-different words, leaves only different ones (counterexamples)*)
-  let counterexes = List.filter differenty withepsilon in
-  match counterexes with
-    | [] -> None
-    | x :: l -> Some x 
 
 
 let query (t: t) (w: word) =
