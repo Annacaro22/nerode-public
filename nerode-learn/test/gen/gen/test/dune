@@ -1,0 +1,5 @@
+(test
+ (name test_gen)
+ (libraries gen core)
+ (preprocess
+  (pps ppx_expect)))

@@ -1,0 +1,139 @@
+(lang dune 3.18)
+(name nerode)
+(version 0.0.1)
+(sections (lib .) (libexec .) (bin ../../bin) (doc ../../doc/nerode))
+(files
+ (lib
+  (META
+   alphabet.ml
+   alphabet.mli
+   dfa.ml
+   dfa.mli
+   dune-package
+   intNfa.ml
+   nerode.a
+   nerode.cma
+   nerode.cmi
+   nerode.cmt
+   nerode.cmx
+   nerode.cmxa
+   nerode.ml
+   nerode__Alphabet.cmi
+   nerode__Alphabet.cmt
+   nerode__Alphabet.cmti
+   nerode__Alphabet.cmx
+   nerode__Dfa.cmi
+   nerode__Dfa.cmt
+   nerode__Dfa.cmti
+   nerode__Dfa.cmx
+   nerode__IntNfa.cmi
+   nerode__IntNfa.cmt
+   nerode__IntNfa.cmx
+   nerode__Nfa.cmi
+   nerode__Nfa.cmt
+   nerode__Nfa.cmti
+   nerode__Nfa.cmx
+   nerode__Parser.cmi
+   nerode__Parser.cmt
+   nerode__Parser.cmx
+   nerode__Pda.cmi
+   nerode__Pda.cmt
+   nerode__Pda.cmti
+   nerode__Pda.cmx
+   nerode__Rx.cmi
+   nerode__Rx.cmt
+   nerode__Rx.cmti
+   nerode__Rx.cmx
+   nerode__Rx_lexer.cmi
+   nerode__Rx_lexer.cmt
+   nerode__Rx_lexer.cmx
+   nerode__Rx_parser.cmi
+   nerode__Rx_parser.cmt
+   nerode__Rx_parser.cmti
+   nerode__Rx_parser.cmx
+   nerode__Word.cmi
+   nerode__Word.cmt
+   nerode__Word.cmti
+   nerode__Word.cmx
+   nfa.ml
+   nfa.mli
+   opam
+   parser.ml
+   pda.ml
+   pda.mli
+   rx.ml
+   rx.mli
+   rx_lexer.ml
+   rx_parser.ml
+   rx_parser.mli
+   word.ml
+   word.mli))
+ (libexec (nerode.cmxs))
+ (bin (deriv rx_dfa_rx))
+ (doc (odoc-pages/index.mld)))
+(library
+ (name nerode)
+ (kind normal)
+ (archives (byte nerode.cma) (native nerode.cmxa))
+ (plugins (byte nerode.cma) (native nerode.cmxs))
+ (native_archives nerode.a)
+ (requires yojson nice_parser core)
+ (main_module_name Nerode)
+ (modes byte native)
+ (modules
+  (wrapped
+   (group
+    (alias
+     (obj_name nerode)
+     (visibility public)
+     (kind alias)
+     (source (path Nerode) (impl (path nerode.ml-gen))))
+    (name Nerode)
+    (modules
+     (module
+      (obj_name nerode__Alphabet)
+      (visibility public)
+      (source
+       (path Alphabet)
+       (intf (path alphabet.mli))
+       (impl (path alphabet.ml))))
+     (module
+      (obj_name nerode__Dfa)
+      (visibility public)
+      (source (path Dfa) (intf (path dfa.mli)) (impl (path dfa.ml))))
+     (module
+      (obj_name nerode__IntNfa)
+      (visibility public)
+      (source (path IntNfa) (impl (path intNfa.ml))))
+     (module
+      (obj_name nerode__Nfa)
+      (visibility public)
+      (source (path Nfa) (intf (path nfa.mli)) (impl (path nfa.ml))))
+     (module
+      (obj_name nerode__Parser)
+      (visibility public)
+      (source (path Parser) (impl (path parser.ml))))
+     (module
+      (obj_name nerode__Pda)
+      (visibility public)
+      (source (path Pda) (intf (path pda.mli)) (impl (path pda.ml))))
+     (module
+      (obj_name nerode__Rx)
+      (visibility public)
+      (source (path Rx) (intf (path rx.mli)) (impl (path rx.ml))))
+     (module
+      (obj_name nerode__Rx_lexer)
+      (visibility public)
+      (source (path Rx_lexer) (impl (path rx_lexer.ml))))
+     (module
+      (obj_name nerode__Rx_parser)
+      (visibility public)
+      (source
+       (path Rx_parser)
+       (intf (path rx_parser.mli))
+       (impl (path rx_parser.ml))))
+     (module
+      (obj_name nerode__Word)
+      (visibility public)
+      (source (path Word) (intf (path word.mli)) (impl (path word.ml))))))
+   (wrapped true))))

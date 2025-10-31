@@ -1,5 +1,5 @@
 (tests
- (names test compare gen test_gen types)
+ (names test compare gen test_gen types binary)
  (libraries nerodelearn nerode ounit2 core)
  (deps tomita_t1 tomita_t3 gen)
  (preprocess

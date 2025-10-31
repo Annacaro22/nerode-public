@@ -1,0 +1,1 @@
+../../../../default/lib/obsTbl.mli

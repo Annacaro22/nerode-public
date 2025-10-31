@@ -1,0 +1,8 @@
+version = "0.0.1"
+description = ""
+requires =
+"core core_kernel.caml_unix nerode ounit2 ppxlib ppxlib.ast yojson z3"
+archive(byte) = "nerodelearn.cma"
+archive(native) = "nerodelearn.cmxa"
+plugin(byte) = "nerodelearn.cma"
+plugin(native) = "nerodelearn.cmxs"

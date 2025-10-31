@@ -36,6 +36,7 @@ let rec binaryConvert num bitstring =
         bitstring
     | _ -> bitstring
 
+
 let int2string int =
   let binary = binaryConvert int Word.epsilon in
   match binary with

@@ -1,0 +1,6 @@
+(library
+ (name gen)
+ (libraries core)
+ (inline_tests)
+ (preprocess
+  (pps ppx_let ppx_expect ppx_inline_test ppx_sexp_conv)))

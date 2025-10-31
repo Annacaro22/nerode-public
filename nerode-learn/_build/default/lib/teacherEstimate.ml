@@ -1,4 +1,4 @@
-(** Angluin's minimally adequate teacher, using an equivalence of up to size 1,000,000 strings to judge
+(** Angluin's minimally adequate teacher, using a PAC equivalence of up to size 10 strings to judge
 DFA equivalence *)
 
 open Nerode
@@ -35,6 +35,7 @@ let rec binaryConvert num bitstring =
       else  
         bitstring
     | _ -> bitstring
+
 
 let int2string int =
   let binary = binaryConvert int Word.epsilon in

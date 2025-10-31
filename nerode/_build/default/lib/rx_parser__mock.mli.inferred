@@ -1,0 +1,23 @@
+type token =
+    X
+  | STAR
+  | RPAR
+  | QMARK
+  | PLUS
+  | NUM of int
+  | NEG
+  | LPAR
+  | EOF
+  | E
+  | DOT
+  | AND
+val menhir_begin_marker : int
+val xv_urx : Rx.t
+val xv_rx_eof : Rx.t
+val xv_rx : Rx.t
+val xv_prx : Rx.t
+val xv_irx : Rx.t
+val xv_drx : Rx.t
+val xv_cx : Rx.t
+val xv_arx : Rx.t
+val menhir_end_marker : int
