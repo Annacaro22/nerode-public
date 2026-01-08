@@ -90,7 +90,7 @@ end
 
 (** This module allows NFAs with any [state] type to determinize to DFA. *)
 module Determinizer:
-  functor (S : Nfa.State) -> Determ
+  functor (Nfa : Nfa.N) -> Determ with type N.t = Nfa.t
 
 (** Convert the DFA to an NFA which has the same transitions and accepting states. *)
 val to_nfa : t -> IntNfa.t

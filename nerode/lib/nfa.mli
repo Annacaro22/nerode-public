@@ -60,4 +60,4 @@ module type N = sig
 end
 
 module Make: 
-  functor (S : State) -> N with type state = S.t
+  functor (S : State) -> (N with type state = S.t)

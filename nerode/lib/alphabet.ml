@@ -54,4 +54,6 @@ let sym_to_int = Fun.id
 
 let w_of_ints (lst: int list) = lst
 
+let sym_of_str (t:t) (s: string) : symbol option =
+  Array.find_index (fun s' -> s = s') t
 
