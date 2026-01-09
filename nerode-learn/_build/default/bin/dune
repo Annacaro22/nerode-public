@@ -1,4 +1,0 @@
-(executables
- (public_names nerodelearn)
- (names main)
- (libraries core nerode nerodelearn))

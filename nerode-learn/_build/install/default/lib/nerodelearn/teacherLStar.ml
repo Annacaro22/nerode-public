@@ -1,1 +1,0 @@
-../../../../default/lib/teacherLStar.ml
