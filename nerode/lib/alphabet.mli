@@ -69,3 +69,6 @@ val sym_to_int : symbol -> int
 (** Convert an integer to a symbol. It is an error to convert an integer greater
     than or equal to the size of the alphabet. *)
 val sym_of_int : int -> symbol
+
+(** Lookup a string in the alphabet and return it as a symbol. *)
+val sym_of_str : t -> string -> symbol option

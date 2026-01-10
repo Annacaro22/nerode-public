@@ -1,5 +1,5 @@
-(ocamllex (modules rx_lexer))
-(menhir (modules rx_parser))
+(ocamllex (modules rx_lexer cfg_lexer))
+(menhir (modules rx_parser cfg_parser))
 
 (env
   (dev

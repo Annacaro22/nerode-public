@@ -128,8 +128,8 @@ module type Determ  = sig
   val determinize : N.t -> t
 end
 
-module Determinizer (S : Nfa.State) = struct
-  module N = Nfa.Make(S)
+module Determinizer (N : Nfa.N) = struct
+  module N = N
   (* The following (eq, d, e) implement the Nfa->Dfa subset construction *)
   type npair = N.t * N.StateSet.t
   let eq ((_,q0):npair) ((_,q1):npair) = N.StateSet.compare q0 q1 = 0
@@ -139,7 +139,7 @@ module Determinizer (S : Nfa.State) = struct
   let determinize (nfa: N.t) =
     mk_dfa reg (N.get_alpha nfa) (nfa, N.get_start nfa)
 end
-module IntDeterm = Determinizer(IntNfa.FInt)
+module IntDeterm = Determinizer(IntNfa)
 
 let to_nfa (dfa: t) : IntNfa.t =
   let n = Array.length dfa.final in
